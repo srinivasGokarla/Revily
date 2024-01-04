@@ -1,7 +1,7 @@
-# Revily Assignment (Brand Wick)
+# Revily Assignment
 
 ## Introduction
-Brand Wick is a MERN stack application for Realtime doubt resolution.
+Revily is a MERN stack application for Realtime doubt resolution.
 
 ## Features
 Key features of the application include:
@@ -14,13 +14,13 @@ Key features of the application include:
 - APIs for handling messages
 
 ## Deployed Link
-[Brand Wick Deployment](https://frontend-iidoxh6bp-srinivasgokarla.vercel.app/)
+[Revily Deployment](https://frontend-iidoxh6bp-srinivasgokarla.vercel.app/)
 
 ## Installation or How to Run the App
 To run the application locally, follow these steps:
 
 ### Backend
-1. Clone the repository: `git clone https://github.com/srinivasGokarla/brand-wick`
+1. Clone the repository: `https://github.com/srinivasGokarla/Revily`
 2. Navigate to the Backend folder: `cd Backend`
 3. Install required Node.js packages: `npm install`
 4. Run the server: `npm run server` (Server will listen on port 5000)
