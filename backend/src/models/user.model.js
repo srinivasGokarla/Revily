@@ -10,35 +10,38 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  phone: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  username: {
-    type: String,
-    required: true,
-  },
   password: {
     type: String,
     required: true,
   },
-  role : {
+  role: {
     type: String,
+    enum: ['student', 'tutor'],
     required: true,
-  },
+},
   
   classGrade : {
-    type: String,
-    required: false,
+    type: String, 
+        required: function () {
+            return this.role === 'student';
+        },
   },
   language: {
     type: String,
     required: false,
   },
+  token: {
+    type: String
+},
+allowedDoubtSubjectTypes: {
+  type: [String], 
+  required: function () {
+      return this.role === 'tutor';
+  },
+},
 
 });
 
-const User = mongoose.model('User', userSchema);
+const Users = mongoose.model('User', userSchema);
 
-module.exports = User;
+module.exports = Users;

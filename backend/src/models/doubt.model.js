@@ -1,17 +1,32 @@
 const mongoose = require('mongoose');
 
 const doubtSchema = new mongoose.Schema({
-    studentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-      },
-      subjectType: {
-        type: String,
-        required: true,
-      },
-     
-    }, { timestamps: true });
+  studentId: {
+      type: String,
+      required: true,
+  },
+  doubtSubject: {
+      type: String,
+      required: true,
+  },
+  classGrade: {
+      type: String,
+      required: true,
+  },
+  language: {
+      type: String,
+      required: true,
+  },
+  status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected'],
+      default: 'pending',
+  },
+  tutorId: {
+      type: String,
+      default: null,
+  },
+}, { timestamps: true });
 
 const Doubt = mongoose.model('Doubt', doubtSchema);
 

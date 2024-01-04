@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../App.css';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 const Login = () => {
   const navigation = useNavigate();
@@ -25,6 +27,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    socket.emit('addUser', formData.email);
 
     try {
       const response = await fetch('http://localhost:5000/user/login', {
@@ -42,10 +45,11 @@ const Login = () => {
       }
 
       const { token, userId, username } = data;
+      socket.emit('login', { userId });
       localStorage.setItem('authToken', token);
       localStorage.setItem('userId', userId);
       alert('Login successfully');
-      navigation('/dashboard');
+      navigation(`/dashboard/${userId}`);
     } catch (error) {
       console.error('Error:', error.message);
       alert(error.message || 'Invalid credentials');

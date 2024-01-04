@@ -1,49 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import Navbar from './Navbar';
+import axios from 'axios';
+import AllConversations from './AllConversations';
 
-const Chat = ({ userToken }) => {
+const Chat = ({ conversationId, senderId }) => {
   const [socket, setSocket] = useState(null);
+  const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+
+  const initializeSocket = () => {
+    const newSocket = io('http://localhost:5000');
+    setSocket(newSocket);
+    return newSocket;
+  };
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:5000'); 
+    const newSocket = initializeSocket();
 
-    setSocket(socketInstance);
-    socketInstance.on('message', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    newSocket.emit('joinRoom', conversationId);
+
+    newSocket.on('newMessage', ({ senderId, message }) => {
+      setMessages((prevMessages) => [...prevMessages, { senderId, message }]);
     });
-    return () => {
-      if (socketInstance) {
-        socketInstance.disconnect();
-      }
-    };
-  }, []);
 
-  const handleSendMessage = () => {
-    if (socket) {
-      socket.emit('chat-message', { token: userToken, message: newMessage });
-      setMessages((prevMessages) => [...prevMessages, { token: userToken, message: newMessage }]);
-      setNewMessage('');
+    return () => {
+      newSocket.emit('leaveRoom', conversationId);
+      newSocket.off('newMessage');
+    };
+  }, [conversationId]);
+
+  const sendMessage = async () => {
+    try {
+      await axios.post('http://localhost:5000/chat/message', {
+        conversationId,
+        senderId,
+        message,
+      });
+      setMessage('');
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
     }
   };
 
   return (
     <div>
+      <Navbar />
       <h2>Chat</h2>
-      <div style={{ border: '1px solid #ccc', padding: '10px', height: '200px', overflowY: 'scroll' }}>
+
+      <div>
         {messages.map((msg, index) => (
-          <p key={index}>{msg.token}: {msg.message}</p>
+          <div key={index}>
+            {msg.senderId === senderId ? 'You: ' : 'Other User: '}
+            {msg.message}
+          </div>
         ))}
       </div>
-      <div>
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-        />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Type your message..."
+      />
+      <button onClick={sendMessage}>Send</button>
+      <AllConversations />
     </div>
   );
 };
